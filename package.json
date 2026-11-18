@@ -1,0 +1,16 @@
+{
+  "name": "khobor-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend for the Khobor news app: feed, categories, channels, comments, accounts, Halal keyword filter.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "optionalDependencies": {
+    "pg": "^8.13.1"
+  }
+}

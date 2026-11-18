@@ -1,0 +1,50 @@
+# Khobor - Render Blueprint
+# One Node web service: the Khobor news API (backend/). Render reads this file when you choose
+# New > Blueprint and pick the repository that holds this folder.
+#
+# Storage: with no DATABASE_URL the server keeps its data in a SQLite file. On Render's free plan
+# that file is wiped on every restart, redeploy and spin-down, so accounts, posts, comments and
+# uploads disappear and the sample stories come back. Fine for a demo. For real users, give it
+# a Postgres database: uncomment the DATABASE_URL lines and the databases section below
+# (basic-256mb is Render's smallest paid Postgres; a workspace can only have one free one).
+
+services:
+  - type: web
+    name: khobor-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Test mode for login codes: the code is returned to the app and shown on screen, labelled
+      # "Test mode code". No SMS or email provider is connected. Set to "0" once one is.
+      - key: OTP_ECHO
+        value: "1"
+      # Posts from users go live at once ("1") or wait for an editor ("0").
+      - key: AUTO_PUBLISH_POSTS
+        value: "1"
+      # Bearer token for the editor endpoints (/api/admin/...). Render generates a random one.
+      - key: ADMIN_TOKEN
+        generateValue: true
+      # Load the 35 sample stories (all marked "নমুনা") on first start. "0" to start empty.
+      - key: SEED_SAMPLE
+        value: "1"
+      # Minutes between RSS feed checks (feeds are added by an editor).
+      - key: FEED_INTERVAL_MIN
+        value: "15"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: khobor-db
+          property: connectionString
+
+databases:
+  - name: khobor-db
+    plan: free          # free Postgres expires 30 days after creation; basic-256mb is the smallest paid plan
+    region: singapore
+    databaseName: khobor
+    user: khobor
